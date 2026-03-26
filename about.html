@@ -1,0 +1,890 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>About — Shakuntalites</title>
+<link rel="preconnect" href="https://fonts.googleapis.com"/>
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin/>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,700;0,900;1,400;1,700&family=DM+Sans:wght@300;400;500&family=Cormorant+Garamond:ital,wght@0,300;0,600;1,300;1,500&family=Noto+Sans+Devanagari:wght@400;600;700&family=Caveat:wght@400;700&display=swap" rel="stylesheet"/>
+<style>
+  :root {
+    --gold: #D4A843;
+    --gold-light: #F0C96B;
+    --gold-pale: #FDF3DC;
+    --cream: #FAF7F0;
+    --brown-dark: #2C1A0E;
+    --brown-mid: #5C3D1E;
+    --brown-light: #A0714F;
+    --ink: #1A1209;
+    --film-grain: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3CfeColorMatrix type='saturate' values='0'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)' opacity='0.08'/%3E%3C/svg%3E");
+  }
+
+  *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+
+  /* ===== PAGE TRANSITION ===== */
+  #pageTransition {
+    position: fixed; inset: 0; z-index: 9000; pointer-events: none;
+    background: linear-gradient(135deg, #0A0703, #1A1209);
+    clip-path: inset(0 0 100% 0);
+    transition: clip-path 0.8s cubic-bezier(0.77,0,0.18,1);
+  }
+  #pageTransition.reveal-in  { clip-path: inset(0 0 0% 0); }
+  #pageTransition.reveal-out { clip-path: inset(100% 0 0% 0); }
+
+  /* ===== CINEMATIC REVEAL ===== */
+  .cinematic-reveal {
+    opacity: 0; transform: translateY(60px) scale(0.97); filter: blur(2px);
+    transition: opacity 0.8s cubic-bezier(0.22,1,0.36,1),
+                transform 0.8s cubic-bezier(0.22,1,0.36,1),
+                filter 0.6s ease;
+  }
+  .cinematic-reveal.in-view { opacity: 1; transform: translateY(0) scale(1); filter: blur(0); }
+  .cinematic-reveal.delay-1 { transition-delay: 0.1s; }
+  .cinematic-reveal.delay-2 { transition-delay: 0.2s; }
+  .cinematic-reveal.delay-3 { transition-delay: 0.35s; }
+
+  .stagger-children > * {
+    opacity: 0; transform: translateY(40px); filter: blur(3px);
+    transition: opacity 0.7s cubic-bezier(0.22,1,0.36,1),
+                transform 0.7s cubic-bezier(0.22,1,0.36,1), filter 0.7s ease;
+  }
+  .stagger-children.in-view > *:nth-child(1){opacity:1;transform:none;filter:none;transition-delay:0.05s}
+  .stagger-children.in-view > *:nth-child(2){opacity:1;transform:none;filter:none;transition-delay:0.12s}
+  .stagger-children.in-view > *:nth-child(3){opacity:1;transform:none;filter:none;transition-delay:0.19s}
+  .stagger-children.in-view > *:nth-child(4){opacity:1;transform:none;filter:none;transition-delay:0.26s}
+  .stagger-children.in-view > *:nth-child(5){opacity:1;transform:none;filter:none;transition-delay:0.33s}
+  .stagger-children.in-view > *:nth-child(6){opacity:1;transform:none;filter:none;transition-delay:0.40s}
+
+  /* ===== MAGNETIC CURSOR ===== */
+  #magnetCursor {
+    position: fixed; top: 0; left: 0;
+    width: clamp(24px,3vw,40px); height: clamp(24px,3vw,40px);
+    border-radius: 50%; background: transparent;
+    border: 2px solid var(--gold); pointer-events: none; z-index: 9999;
+    transform: translate(-50%,-50%);
+    transition: width 0.35s cubic-bezier(0.22,1,0.36,1), height 0.35s cubic-bezier(0.22,1,0.36,1), opacity 0.3s, border-color 0.3s;
+    opacity: 0;
+    box-shadow: 0 0 10px rgba(212,168,67,0.3), inset 0 0 10px rgba(212,168,67,0.05);
+  }
+  #magnetCursor.visible { opacity: 1; }
+  #magnetCursor.hovering {
+    width: clamp(40px,5vw,64px); height: clamp(40px,5vw,64px);
+    border-color: var(--gold-light);
+    box-shadow: 0 0 20px rgba(212,168,67,0.5), inset 0 0 20px rgba(212,168,67,0.08);
+  }
+  @media (hover:none) and (pointer:coarse) { #magnetCursor, #magnetTrail { display:none !important; } }
+  #magnetTrail {
+    position: fixed; top: 0; left: 0; width: 6px; height: 6px;
+    border-radius: 50%; background: var(--gold-light); pointer-events: none;
+    z-index: 9998; transform: translate(-50%,-50%); opacity: 0; transition: opacity 0.3s;
+    box-shadow: 0 0 10px var(--gold);
+  }
+  #magnetTrail.visible { opacity: 0.7; }
+
+  /* ===== SCROLL BAR ===== */
+  #scrollBar {
+    position: fixed; top: 0; left: 0; height: 2px; width: 0%;
+    background: linear-gradient(90deg,#8B5E3C,#D4A843,#F0C96B,#D4A843);
+    background-size: 200% 100%; animation: gradShift 3s linear infinite;
+    z-index: 9999; transition: width 0.1s linear;
+    box-shadow: 0 0 8px rgba(212,168,67,0.5);
+  }
+  @keyframes gradShift { 0%{background-position:0% 0} 100%{background-position:200% 0} }
+
+  /* ===== SECTION LINE WIPE ===== */
+  section { position: relative; overflow: hidden; }
+  section::before {
+    content:''; position:absolute; top:0; left:-100%; width:3px; height:100%;
+    background:linear-gradient(to bottom,transparent,var(--gold),transparent);
+    opacity:0; transition:opacity 0.5s;
+  }
+  section.in-view::before { opacity:0.3; animation:sectionLine 1.5s ease forwards; }
+  @keyframes sectionLine {
+    from{left:-3px;opacity:0} to{left:calc(100% + 3px);opacity:0.3}
+  }
+
+  /* ===== GLOBAL ===== */
+  html { scroll-behavior: smooth; }
+  body {
+    background: var(--ink); color: var(--cream);
+    font-family: 'DM Sans', sans-serif;
+    overflow-x: hidden; cursor: none;
+  }
+  @media (hover:none) and (pointer:coarse) { body { cursor:auto !important; } }
+
+  /* ===== GRAIN ===== */
+  .grain-overlay {
+    position: absolute; inset: 0;
+    background-image: var(--film-grain);
+    background-size: 150px; opacity: 0.4;
+    mix-blend-mode: overlay; pointer-events: none;
+  }
+
+  /* ===== NAV ===== */
+  nav {
+    position: fixed; top: 0; width: 100%; z-index: 100;
+    padding: 24px 60px; display: flex;
+    justify-content: space-between; align-items: center;
+    background: transparent !important;
+    transition: all 0.5s cubic-bezier(0.22,1,0.36,1);
+  }
+  nav.scrolled {
+    background: rgba(10,7,3,0.85) !important;
+    backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px);
+    padding: 14px 60px;
+    border-bottom: 1px solid rgba(212,168,67,0.08);
+    box-shadow: 0 4px 30px rgba(0,0,0,0.4);
+  }
+  .nav-logo {
+    font-family: 'Playfair Display', serif; font-size: 1.35rem; font-weight: 700;
+    color: var(--gold) !important; -webkit-text-fill-color: var(--gold) !important;
+    letter-spacing: 0.08em; text-decoration: none; position: relative; z-index: 101;
+    transition: transform 0.3s cubic-bezier(0.34,1.56,0.64,1), text-shadow 0.3s !important;
+    display: inline-block;
+  }
+  .nav-logo::after {
+    content:''; position:absolute; bottom:-3px; left:0;
+    width:0; height:1px; background:var(--gold); transition:width 0.4s ease;
+  }
+  .nav-logo:hover::after { width: 100%; }
+  .nav-logo:hover { transform: scale(1.05) translateY(-1px) !important; text-shadow: 0 4px 20px rgba(212,168,67,0.4) !important; }
+  .nav-links { display:flex; gap:40px; list-style:none; }
+  .nav-links a {
+    font-size: 0.72rem; letter-spacing: 0.18em; text-transform: uppercase;
+    color: rgba(250,247,240,0.5); text-decoration: none;
+    transition: all 0.3s; position: relative; padding-bottom: 4px;
+  }
+  .nav-links a::after {
+    content:''; position:absolute; bottom:0; left:50%;
+    width:0; height:1px; background:var(--gold);
+    transition:all 0.3s ease; transform:translateX(-50%);
+  }
+  .nav-links a:hover { color: var(--gold-light); }
+  .nav-links a:hover::after { width: 100%; }
+  .nav-links a.active { color: var(--gold); }
+  .nav-links a.active::after { width: 100%; }
+
+  /* ===== HAMBURGER ===== */
+  .hamburger {
+    display:none; flex-direction:column; gap:5px; cursor:none;
+    padding:8px; border:none; background:transparent; z-index:200;
+  }
+  .hamburger span {
+    display:block; width:24px; height:2px; background:var(--gold);
+    border-radius:2px; transition:all 0.35s cubic-bezier(0.22,1,0.36,1);
+    transform-origin:center;
+  }
+  .hamburger.open span:nth-child(1){ transform:translateY(7px) rotate(45deg); }
+  .hamburger.open span:nth-child(2){ opacity:0; transform:scaleX(0); }
+  .hamburger.open span:nth-child(3){ transform:translateY(-7px) rotate(-45deg); }
+
+  /* ===== MOBILE MENU ===== */
+  .mobile-menu {
+    position:fixed; top:0; left:0; right:0; bottom:0;
+    background:rgba(8,5,2,0.97); backdrop-filter:blur(20px);
+    z-index:150; display:flex; flex-direction:column;
+    align-items:center; justify-content:center; gap:8px;
+    opacity:0; pointer-events:none; transition:opacity 0.4s ease;
+  }
+  .mobile-menu.open { opacity:1; pointer-events:all; }
+  .mobile-menu a {
+    font-family:'Playfair Display',serif; font-size:clamp(2rem,8vw,3rem);
+    font-style:italic; color:rgba(250,247,240,0.35); text-decoration:none;
+    letter-spacing:0.04em; transform:translateY(20px); opacity:0;
+    transition:color 0.3s, transform 0.5s, opacity 0.5s;
+  }
+  .mobile-menu.open a { opacity:1; transform:translateY(0); }
+  .mobile-menu.open a:nth-child(1){transition-delay:0.05s}
+  .mobile-menu.open a:nth-child(2){transition-delay:0.10s}
+  .mobile-menu.open a:nth-child(3){transition-delay:0.15s}
+  .mobile-menu.open a:nth-child(4){transition-delay:0.20s}
+  .mobile-menu.open a:nth-child(5){transition-delay:0.25s}
+  .mobile-menu.open a:nth-child(6){transition-delay:0.30s}
+  .mobile-menu.open a:nth-child(7){transition-delay:0.35s}
+  .mobile-menu a:hover { color: var(--gold); }
+  .mobile-menu-batch {
+    position:absolute; bottom:40px; font-size:0.7rem; letter-spacing:0.25em;
+    text-transform:uppercase; color:rgba(212,168,67,0.3);
+  }
+
+  /* ===== PAGE HERO ===== */
+  .page-hero {
+    position: relative; min-height: 70vh;
+    display: flex; align-items: center; justify-content: center;
+    text-align: center; overflow: hidden;
+  }
+  .page-hero-bg {
+    position: absolute; inset: 0;
+    background: radial-gradient(ellipse 80% 60% at 50% 40%, #4A2C0A 0%, #1A1209 70%);
+  }
+  .bokeh-container {
+    position: absolute; inset: 0; overflow: hidden;
+  }
+  .bokeh {
+    position: absolute; border-radius: 50%;
+    background: radial-gradient(circle, var(--gold) 0%, transparent 70%);
+    animation: float-bokeh linear infinite; opacity: 0;
+  }
+  @keyframes float-bokeh {
+    0%  { transform:translateY(110%) scale(0.5) rotateZ(0deg); opacity:0; }
+    10% { opacity:var(--op); }
+    90% { opacity:var(--op); }
+    100%{ transform:translateY(-10%) scale(1.4) rotateZ(180deg); opacity:0; }
+  }
+  .page-hero-content { position:relative; z-index:2; padding: 0 24px; }
+  .hero-badge {
+    display: inline-block; border: 1px solid rgba(212,168,67,0.4);
+    color: var(--gold-light); font-size: 0.7rem; letter-spacing: 0.3em;
+    text-transform: uppercase; padding: 7px 22px; border-radius: 50px;
+    margin-bottom: 32px; background: rgba(212,168,67,0.08);
+    animation: fadeUp 1s ease 0.3s both;
+  }
+  .page-hero-title {
+    font-family: 'Playfair Display', serif;
+    font-size: clamp(3.5rem, 9vw, 7.5rem); font-weight: 900;
+    line-height: 0.95; color: var(--cream);
+    text-shadow: 1px 1px 0 rgba(212,168,67,0.3), 2px 2px 0 rgba(212,168,67,0.2),
+                 3px 3px 0 rgba(212,168,67,0.1), 0 20px 40px rgba(0,0,0,0.5);
+    animation: fadeUp 1.1s ease 0.5s both;
+  }
+  .page-hero-title em { color: var(--gold); font-style:italic; display:block; }
+  .page-hero-sub {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: clamp(1rem, 2.5vw, 1.5rem); font-style: italic;
+    color: rgba(250,247,240,0.55); margin-top: 20px;
+    animation: fadeUp 1.1s ease 0.7s both;
+  }
+  @keyframes fadeUp { from{opacity:0;transform:translateY(30px)} to{opacity:1;transform:translateY(0)} }
+
+  /* ===== SECTION COMMON ===== */
+  section { padding: 100px 60px; }
+  .section-eyebrow {
+    font-size: 0.7rem; letter-spacing: 0.3em; text-transform: uppercase;
+    color: var(--gold); margin-bottom: 16px; display: flex; align-items: center; gap: 14px;
+  }
+  .section-eyebrow::before {
+    content:''; display:inline-block; width:30px; height:1px; background:var(--gold);
+  }
+  .section-title {
+    font-family: 'Playfair Display', serif;
+    font-size: clamp(2.2rem,4vw,3.5rem); font-weight: 700;
+    line-height: 1.15; color: var(--cream); margin-bottom: 16px;
+    text-shadow: 2px 2px 0 rgba(212,168,67,0.08), 4px 4px 0 rgba(0,0,0,0.15);
+    transition: text-shadow 0.3s;
+  }
+  .section-title:hover { text-shadow: 3px 3px 0 rgba(212,168,67,0.15), 6px 6px 0 rgba(0,0,0,0.2); }
+  .section-title em { color: var(--gold); font-style: italic; }
+  .section-desc {
+    font-family: 'Cormorant Garamond', serif; font-size: 1.25rem;
+    color: rgba(250,247,240,0.5); font-style: italic; max-width: 560px;
+  }
+
+  /* ===== REVEAL ===== */
+  .reveal { opacity:0; transform:translateY(40px); transition:opacity 0.8s ease, transform 0.8s ease; }
+  .reveal.visible { opacity:1; transform:translateY(0); }
+  .reveal-delay-1{transition-delay:0.1s}
+  .reveal-delay-2{transition-delay:0.2s}
+  .reveal-delay-3{transition-delay:0.3s}
+
+  /* ===== ABOUT SPECIFIC ===== */
+
+  /* Divider line */
+  .gold-line {
+    width: 60px; height: 1px; background: var(--gold);
+    margin: 0 auto 48px; opacity: 0.5;
+  }
+
+  /* Intro section */
+  .about-intro {
+    background: #140E07;
+    display: grid; grid-template-columns: 1fr 1fr; gap: 80px;
+    align-items: center;
+  }
+  .about-intro-text { }
+  .about-intro-text p {
+    font-family: 'Cormorant Garamond', serif; font-size: 1.2rem;
+    color: rgba(250,247,240,0.65); line-height: 1.85; margin-bottom: 20px;
+  }
+  .about-intro-text p strong { color: var(--gold-light); font-weight: 600; }
+  .about-visual {
+    position: relative;
+  }
+  .about-img-frame {
+    width: 100%; aspect-ratio: 4/5;
+    background: linear-gradient(135deg, #3A2010 0%, #5C3D1E 50%, #2C1A0E 100%);
+    border-radius: 16px; overflow: hidden; position: relative;
+    border: 1px solid rgba(212,168,67,0.15);
+    box-shadow: 0 40px 80px rgba(0,0,0,0.6), 0 0 0 1px rgba(212,168,67,0.08);
+    animation: float3D 6s ease-in-out infinite;
+    transform-style: preserve-3d;
+  }
+  @keyframes float3D {
+    0%   {transform:translateY(0px) rotateX(2deg) rotateY(-3deg) scale(1)}
+    25%  {transform:translateY(-12px) rotateX(-1deg) rotateY(2deg) scale(1.01)}
+    50%  {transform:translateY(-6px) rotateX(3deg) rotateY(-1deg) scale(1.005)}
+    75%  {transform:translateY(-14px) rotateX(-2deg) rotateY(3deg) scale(1.01)}
+    100% {transform:translateY(0px) rotateX(2deg) rotateY(-3deg) scale(1)}
+  }
+  .about-img-inner {
+    position: absolute; inset: 0;
+    display: flex; flex-direction: column;
+    align-items: center; justify-content: center; gap: 16px;
+    padding: 40px;
+  }
+  .about-img-emoji { font-size: 6rem; animation: fadeUp 1s ease 0.6s both; }
+  .about-img-label {
+    font-family: 'Playfair Display', serif; font-style: italic;
+    font-size: 1.4rem; color: var(--gold); text-align: center;
+    text-shadow: 0 0 30px rgba(212,168,67,0.4);
+  }
+  .about-img-sub {
+    font-size: 0.75rem; letter-spacing: 0.2em; text-transform: uppercase;
+    color: rgba(250,247,240,0.3);
+  }
+  .about-corner-badge {
+    position: absolute; top: -16px; right: -16px;
+    width: 80px; height: 80px; border-radius: 50%;
+    background: var(--gold); color: var(--ink);
+    display: flex; flex-direction: column; align-items: center; justify-content: center;
+    font-family: 'Playfair Display', serif; font-weight: 900;
+    box-shadow: 0 10px 30px rgba(212,168,67,0.4);
+    animation: float3D 4s ease-in-out infinite reverse;
+  }
+  .about-corner-badge .badge-num { font-size: 1.6rem; line-height: 1; }
+  .about-corner-badge .badge-text { font-size: 0.5rem; letter-spacing: 0.1em; opacity: 0.7; }
+
+  /* Stats bar */
+  .stats-section { background: #0D0903; padding: 70px 60px; }
+  .stats-inner {
+    display: flex; justify-content: center; gap: 0;
+    max-width: 900px; margin: 0 auto;
+    border: 1px solid rgba(212,168,67,0.1); border-radius: 20px;
+    background: rgba(255,255,255,0.015);
+    overflow: hidden;
+  }
+  .stat-item {
+    flex: 1; padding: 48px 40px; text-align: center;
+    position: relative;
+  }
+  .stat-item + .stat-item::before {
+    content:''; position:absolute; left:0; top:20%; height:60%;
+    width:1px; background:rgba(212,168,67,0.1);
+  }
+  .stat-num {
+    font-family: 'Playfair Display', serif; font-size: clamp(2.5rem,5vw,4rem);
+    font-weight: 900; color: var(--gold); line-height: 1;
+    text-shadow: 0 0 30px rgba(212,168,67,0.3);
+  }
+  .stat-label {
+    font-size: 0.72rem; letter-spacing: 0.2em; text-transform: uppercase;
+    color: rgba(250,247,240,0.35); margin-top: 10px;
+  }
+
+  /* Values / pillars grid */
+  .pillars-section { background: #140E07; }
+  .pillars-grid {
+    display: grid; grid-template-columns: repeat(3,1fr); gap: 28px;
+    margin-top: 56px;
+  }
+  .pillar-card {
+    background: rgba(255,255,255,0.02);
+    border: 1px solid rgba(212,168,67,0.1); border-radius: 16px;
+    padding: 44px 36px; position: relative; overflow: hidden;
+    transition: border-color 0.4s, transform 0.4s cubic-bezier(0.22,1,0.36,1), box-shadow 0.4s;
+    transform-style: preserve-3d;
+  }
+  .pillar-card::before {
+    content:''; position:absolute; inset:0;
+    background: linear-gradient(135deg, rgba(212,168,67,0.04) 0%, transparent 60%);
+    opacity:0; transition:opacity 0.4s;
+  }
+  .pillar-card:hover { border-color: rgba(212,168,67,0.3); transform: translateY(-8px) rotateX(3deg); box-shadow: 0 24px 50px rgba(0,0,0,0.5); }
+  .pillar-card:hover::before { opacity:1; }
+  .pillar-icon {
+    font-size: 2.8rem; margin-bottom: 24px; display: block;
+    filter: drop-shadow(0 0 12px rgba(212,168,67,0.3));
+  }
+  .pillar-title {
+    font-family: 'Playfair Display', serif; font-size: 1.35rem;
+    font-weight: 700; color: var(--cream); margin-bottom: 12px;
+  }
+  .pillar-desc {
+    font-family: 'Cormorant Garamond', serif; font-size: 1.05rem;
+    color: rgba(250,247,240,0.5); line-height: 1.75; font-style: italic;
+  }
+  .pillar-num {
+    position: absolute; top: 24px; right: 28px;
+    font-family: 'Playfair Display', serif; font-size: 3.5rem;
+    font-weight: 900; color: rgba(212,168,67,0.06); line-height: 1;
+    pointer-events: none;
+  }
+
+  /* School section */
+  .school-section { background: #0D0903; }
+  .school-grid {
+    display: grid; grid-template-columns: 1fr 1fr; gap: 80px;
+    align-items: center; margin-top: 56px;
+  }
+  .school-text p {
+    font-family: 'Cormorant Garamond', serif; font-size: 1.2rem;
+    color: rgba(250,247,240,0.6); line-height: 1.85; margin-bottom: 20px;
+  }
+  .school-text p strong { color: var(--gold-light); }
+  .school-quote-block {
+    border-left: 2px solid var(--gold);
+    padding: 20px 28px; margin: 32px 0;
+    background: rgba(212,168,67,0.04);
+    border-radius: 0 12px 12px 0;
+  }
+  .school-quote-block p {
+    font-family: 'Playfair Display', serif; font-size: 1.3rem;
+    font-style: italic; color: var(--cream); line-height: 1.6;
+    margin-bottom: 10px !important;
+  }
+  .school-quote-block cite {
+    font-size: 0.72rem; letter-spacing: 0.2em; text-transform: uppercase;
+    color: var(--gold); font-style: normal;
+  }
+  .school-emblem {
+    background: linear-gradient(135deg, #2C1A0E, #4A2C0A);
+    border-radius: 20px; padding: 60px 40px; text-align: center;
+    border: 1px solid rgba(212,168,67,0.15);
+    box-shadow: 0 40px 80px rgba(0,0,0,0.5);
+  }
+  .emblem-symbol {
+    font-size: 5rem; margin-bottom: 24px; display: block;
+    filter: drop-shadow(0 0 20px rgba(212,168,67,0.4));
+  }
+  .emblem-name {
+    font-family: 'Playfair Display', serif; font-size: 2rem; font-weight: 900;
+    color: var(--gold); margin-bottom: 8px;
+  }
+  .emblem-sub {
+    font-family: 'Noto Sans Devanagari', sans-serif; font-size: 1.2rem;
+    color: rgba(250,247,240,0.5); letter-spacing: 0;
+  }
+  .emblem-tagline {
+    font-family: 'Cormorant Garamond', serif; font-size: 0.9rem;
+    font-style: italic; color: rgba(212,168,67,0.5); margin-top: 16px;
+  }
+
+  /* Creators section */
+  .creators-section { background: #140E07; }
+  .creators-grid {
+    display: grid; grid-template-columns: repeat(2,1fr); gap: 32px;
+    max-width: 800px; margin: 56px auto 0;
+  }
+  .creator-card {
+    background: rgba(255,255,255,0.025); border: 1px solid rgba(212,168,67,0.12);
+    border-radius: 20px; padding: 44px 36px; text-align: center;
+    transition: all 0.4s cubic-bezier(0.22,1,0.36,1); transform-style: preserve-3d;
+  }
+  .creator-card:hover {
+    transform: translateY(-10px) rotateX(4deg);
+    box-shadow: 0 30px 60px rgba(0,0,0,0.6), 0 0 0 1px rgba(212,168,67,0.2);
+    border-color: rgba(212,168,67,0.3);
+  }
+  .creator-avatar {
+    width: 80px; height: 80px; border-radius: 50%;
+    margin: 0 auto 20px; display: flex; align-items: center; justify-content: center;
+    font-family: 'Playfair Display', serif; font-size: 2rem; font-weight: 900;
+    color: var(--ink);
+  }
+  .creator-name {
+    font-family: 'Playfair Display', serif; font-size: 1.25rem;
+    font-weight: 700; color: var(--cream); margin-bottom: 6px;
+  }
+  .creator-role {
+    font-size: 0.72rem; letter-spacing: 0.2em; text-transform: uppercase;
+    color: var(--gold); margin-bottom: 16px;
+  }
+  .creator-desc {
+    font-family: 'Cormorant Garamond', serif; font-size: 1rem;
+    color: rgba(250,247,240,0.45); font-style: italic; line-height: 1.7;
+  }
+
+  /* ===== FOOTER ===== */
+  footer {
+    background: #0A0703; padding: 80px 60px 40px; text-align: center;
+    border-top: 1px solid rgba(212,168,67,0.08);
+    display: flex; flex-direction: column; align-items: center; justify-content: center;
+  }
+  .footer-logo {
+    font-family: 'Playfair Display', serif; font-size: 3rem; font-weight: 900;
+    color: var(--gold); margin-bottom: 16px;
+    text-shadow: 2px 2px 0 rgba(212,168,67,0.3), 4px 4px 0 rgba(212,168,67,0.15), 6px 6px 0 rgba(0,0,0,0.2);
+    transition: transform 0.4s cubic-bezier(0.34,1.56,0.64,1), text-shadow 0.4s;
+    display: inline-block;
+  }
+  .footer-logo:hover { transform: scale(1.04) translateY(-3px); text-shadow: 3px 3px 0 rgba(212,168,67,0.4), 6px 6px 0 rgba(212,168,67,0.2), 10px 10px 0 rgba(0,0,0,0.3); }
+  .footer-tagline {
+    font-family: 'Cormorant Garamond', serif; font-size: 1.2rem; font-style: italic;
+    color: rgba(250,247,240,0.35); margin-bottom: 48px;
+  }
+  .footer-nav {
+    display: flex; gap: 32px; margin-bottom: 36px; flex-wrap: wrap; justify-content: center;
+  }
+  .footer-nav a {
+    font-size: 0.72rem; letter-spacing: 0.18em; text-transform: uppercase;
+    color: rgba(250,247,240,0.3); text-decoration: none; transition: color 0.3s;
+  }
+  .footer-nav a:hover { color: var(--gold); }
+  .footer-bottom {
+    font-size: 0.72rem; letter-spacing: 0.1em; color: rgba(250,247,240,0.2);
+    border-top: 1px solid rgba(212,168,67,0.06); padding-top: 28px;
+  }
+
+  /* ===== RESPONSIVE ===== */
+  @media (max-width: 768px) {
+    nav { padding: 18px 24px; }
+    .hamburger { display: flex; }
+    .nav-links { display: none; }
+    section { padding: 70px 24px; }
+    .about-intro { grid-template-columns: 1fr; gap: 48px; }
+    .about-visual { order: -1; }
+    .about-img-frame { aspect-ratio: 3/2; }
+    .pillars-grid { grid-template-columns: 1fr; }
+    .school-grid { grid-template-columns: 1fr; gap: 40px; }
+    .creators-grid { grid-template-columns: 1fr; }
+    .stats-inner { flex-direction: column; }
+    .stat-item + .stat-item::before { left:20%; top:0; width:60%; height:1px; background:rgba(212,168,67,0.1); }
+  }
+</style>
+</head>
+<body>
+
+<!-- Transition + cursor -->
+<div id="pageTransition"></div>
+<div id="magnetCursor"></div>
+<div id="magnetTrail"></div>
+
+<!-- MOBILE MENU -->
+<div class="mobile-menu" id="mobileMenu">
+  <button onclick="closeMobileMenu()" style="position:absolute;top:28px;right:28px;background:rgba(212,168,67,0.1);border:1px solid rgba(212,168,67,0.3);color:var(--gold);width:44px;height:44px;border-radius:50%;font-size:1.3rem;cursor:pointer;display:flex;align-items:center;justify-content:center;transition:all 0.3s;">✕</button>
+  <a href="index.html#years" onclick="closeMobileMenu()">Gallery</a>
+  <a href="index.html#memories" onclick="closeMobileMenu()">Memories</a>
+  <a href="index.html#videos" onclick="closeMobileMenu()">Videos</a>
+  <a href="index.html#wishes" onclick="closeMobileMenu()">Wishes</a>
+  <a href="index.html#teachers" onclick="closeMobileMenu()">Teachers</a>
+  <a href="about.html" onclick="closeMobileMenu()">About</a>
+  <a href="contact.html" onclick="closeMobileMenu()">Contact</a>
+  <div class="mobile-menu-batch">Shakuntalites · Class of 2025–26</div>
+</div>
+
+<!-- NAV -->
+<nav id="mainNav">
+  <a class="nav-logo" href="index.html">Shakuntalites</a>
+  <ul class="nav-links">
+    <li><a href="index.html#years">Gallery</a></li>
+    <li><a href="index.html#memories">Memories</a></li>
+    <li><a href="index.html#videos">Videos</a></li>
+    <li><a href="index.html#wishes">Wishes</a></li>
+    <li><a href="index.html#teachers">Teachers</a></li>
+    <li><a href="about.html" class="active">About</a></li>
+    <li><a href="contact.html">Contact</a></li>
+  </ul>
+  <button class="hamburger" id="hamburger" onclick="toggleMobileMenu()">
+    <span></span><span></span><span></span>
+  </button>
+</nav>
+
+<!-- PAGE HERO -->
+<div class="page-hero">
+  <div class="page-hero-bg"></div>
+  <div class="bokeh-container" id="bokehContainer"></div>
+  <div class="grain-overlay"></div>
+  <div class="page-hero-content">
+    <div class="hero-badge">Shakuntalites · 2025–26</div>
+    <h1 class="page-hero-title">
+      Our <em>Story</em>
+    </h1>
+    <p class="page-hero-sub">Seven years, two batches, one eternal family.</p>
+  </div>
+</div>
+
+<!-- ABOUT INTRO -->
+<section class="about-intro cinematic-reveal">
+  <div class="about-intro-text">
+    <div class="section-eyebrow reveal">Who We Are</div>
+    <h2 class="section-title reveal">Born in the <em>Halls</em> of शाकुन्तलम्</h2>
+    <p class="section-desc reveal" style="max-width:100%;margin-bottom:32px;">
+      We are Shakuntalites — a name that carries the weight of seven unforgettable years, the warmth of lifelong friendships, and the pride of two graduating batches.
+    </p>
+    <p class="reveal" style="font-family:'Cormorant Garamond',serif;font-size:1.15rem;color:rgba(250,247,240,0.6);line-height:1.85;margin-bottom:20px;">
+      This page is a <strong>digital tribute</strong> — a living memory album — crafted for every student who walked through the iron gates of our school and called it home. From Class 6 to Class 12, the journey shaped us in ways no textbook ever could.
+    </p>
+    <p class="reveal reveal-delay-1" style="font-family:'Cormorant Garamond',serif;font-size:1.15rem;color:rgba(250,247,240,0.6);line-height:1.85;margin-bottom:20px;">
+      Here you will find <strong>galleries of our events</strong>, farewell memories, teacher tributes, and a wall of wishes from hearts that refuse to forget. This is not just a website — it is our farewell, immortalised.
+    </p>
+    <p class="reveal reveal-delay-2" style="font-family:'Cormorant Garamond',serif;font-size:1.15rem;color:rgba(250,247,240,0.6);line-height:1.85;">
+      Two batches. <strong>Batch 2024–25</strong> and <strong>Batch 2025–26</strong>. Different years, different stories — same unbreakable spirit.
+    </p>
+  </div>
+  <div class="about-visual reveal reveal-delay-1">
+    <div class="about-img-frame">
+      <div class="about-img-inner">
+        <span class="about-img-emoji">🏫</span>
+        <div class="about-img-label">शाकुन्तलम् विद्यालय</div>
+        <div class="about-img-sub">Est. · Our Second Home</div>
+      </div>
+      <div class="grain-overlay" style="opacity:0.15;"></div>
+    </div>
+    <div class="about-corner-badge">
+      <span class="badge-num">7</span>
+      <span class="badge-text">Years</span>
+    </div>
+  </div>
+</section>
+
+<!-- STATS -->
+<div class="stats-section cinematic-reveal">
+  <div class="stats-inner stagger-children">
+    <div class="stat-item">
+      <div class="stat-num"><span data-count="2">0</span></div>
+      <div class="stat-label">Batches</div>
+    </div>
+    <div class="stat-item">
+      <div class="stat-num"><span data-count="7">0</span></div>
+      <div class="stat-label">Years Together</div>
+    </div>
+    <div class="stat-item">
+      <div class="stat-num"><span data-count="200">0</span>+</div>
+      <div class="stat-label">Students</div>
+    </div>
+    <div class="stat-item">
+      <div class="stat-num">∞</div>
+      <div class="stat-label">Memories</div>
+    </div>
+  </div>
+</div>
+
+<!-- PILLARS -->
+<section class="pillars-section cinematic-reveal">
+  <div class="section-eyebrow reveal">What We Stand For</div>
+  <h2 class="section-title reveal">The Pillars of Our <em>Bond</em></h2>
+  <p class="section-desc reveal">More than academics — a philosophy of life we learnt together.</p>
+  <div class="pillars-grid stagger-children">
+    <div class="pillar-card">
+      <span class="pillar-num">01</span>
+      <span class="pillar-icon">🤝</span>
+      <div class="pillar-title">Brotherhood &amp; Sisterhood</div>
+      <p class="pillar-desc">We came as strangers and leave as family. The bonds forged in these corridors outlast every exam, every board result, every year that passes.</p>
+    </div>
+    <div class="pillar-card">
+      <span class="pillar-num">02</span>
+      <span class="pillar-icon">📚</span>
+      <div class="pillar-title">Knowledge &amp; Growth</div>
+      <p class="pillar-desc">From nervous Class 6 students to confident Class 12 graduates — every lesson, every teacher, every late-night study session made us who we are.</p>
+    </div>
+    <div class="pillar-card">
+      <span class="pillar-num">03</span>
+      <span class="pillar-icon">🎭</span>
+      <div class="pillar-title">Culture &amp; Expression</div>
+      <p class="pillar-desc">प्रभांजलि, मंगलकामना समारोह, Sports Day — every stage we stood on taught us courage. We learned to speak, to perform, to shine.</p>
+    </div>
+    <div class="pillar-card">
+      <span class="pillar-num">04</span>
+      <span class="pillar-icon">🙏</span>
+      <div class="pillar-title">Gratitude &amp; Respect</div>
+      <p class="pillar-desc">Our teachers gave us more than knowledge — they gave us values, patience, and belief. We carry their lessons long after the bell rings for the last time.</p>
+    </div>
+    <div class="pillar-card">
+      <span class="pillar-num">05</span>
+      <span class="pillar-icon">💪</span>
+      <div class="pillar-title">Resilience &amp; Grit</div>
+      <p class="pillar-desc">Board examinations, online classes, new challenges — we faced it all together. Adversity became our classroom too, and we graduated from that with honours.</p>
+    </div>
+    <div class="pillar-card">
+      <span class="pillar-num">06</span>
+      <span class="pillar-icon">❤️</span>
+      <div class="pillar-title">Memory &amp; Legacy</div>
+      <p class="pillar-desc">This website is our pledge — to remember, to honour, to keep the flame of Shakuntalite identity burning no matter how far our paths diverge.</p>
+    </div>
+  </div>
+</section>
+
+<!-- SCHOOL SECTION -->
+<section class="school-section cinematic-reveal">
+  <div class="school-grid">
+    <div class="school-text">
+      <div class="section-eyebrow reveal">Our School</div>
+      <h2 class="section-title reveal">शाकुन्तलम् — <em>The Heart</em></h2>
+      <p class="reveal" style="font-family:'Cormorant Garamond',serif;font-size:1.2rem;color:rgba(250,247,240,0.6);line-height:1.85;margin-bottom:20px;">
+        शाकुन्तलम् विद्यालय is more than an institution — it is the place where thousands of young lives found direction, friendship, and purpose. Named after the timeless heroine of Kalidasa's poetry, our school carries within it the spirit of devotion, beauty, and enduring love.
+      </p>
+      <div class="school-quote-block reveal reveal-delay-1">
+        <p>Where education meets emotion, and learning becomes living.</p>
+        <cite>The Shakuntalite Motto</cite>
+      </div>
+      <p class="reveal reveal-delay-2" style="font-family:'Cormorant Garamond',serif;font-size:1.15rem;color:rgba(250,247,240,0.55);line-height:1.85;">
+        From the annual Mangalakamna Samaroh to the cultural evenings of Prabhanjali, from the roar of Sports Day to the quiet of study halls at dawn — every corner of this school holds a story that belongs to us.
+      </p>
+    </div>
+    <div class="school-emblem reveal reveal-delay-1">
+      <span class="emblem-symbol">🏫</span>
+      <div class="emblem-name">Shakuntalites</div>
+      <div class="emblem-sub">शाकुन्तलम् विद्यालय</div>
+      <p class="emblem-tagline">Forever in our hearts · 2025–26</p>
+    </div>
+  </div>
+</section>
+
+<!-- CREATORS -->
+<section class="creators-section cinematic-reveal">
+  <div class="section-eyebrow reveal" style="justify-content:center;">Made With Love</div>
+  <h2 class="section-title reveal" style="text-align:center;">The Minds Behind <em>This</em></h2>
+  <p class="section-desc reveal" style="margin:0 auto;text-align:center;">Two students who refused to let these memories fade into time.</p>
+  <div class="creators-grid stagger-children">
+    <div class="creator-card">
+      <div class="creator-avatar" style="background:linear-gradient(135deg,#D4A843,#8B5E3C);">L</div>
+      <div class="creator-name">Lukveer Singh</div>
+      <div class="creator-role">Designer &amp; Developer</div>
+      <p class="creator-desc">Crafted the design, animations, and the cinematic experience you see here. A Shakuntalite who believed every memory deserves to be beautiful.</p>
+    </div>
+    <div class="creator-card">
+      <div class="creator-avatar" style="background:linear-gradient(135deg,#8B5E3C,#5C3D1E);">R</div>
+      <div class="creator-name">Rohit Yadav</div>
+      <div class="creator-role">Co-creator &amp; Vision</div>
+      <p class="creator-desc">Brought the vision and the heart. Collected memories, stories, and wishes so that no Shakuntalite would ever feel forgotten.</p>
+    </div>
+  </div>
+</section>
+
+<!-- FOOTER -->
+<footer>
+  <div class="footer-logo">Shakuntalites</div>
+  <p class="footer-tagline">Class of 2025–26 · Forever in each other's hearts</p>
+  <nav class="footer-nav">
+    <a href="index.html">Home</a>
+    <a href="index.html#years">Gallery</a>
+    <a href="index.html#wishes">Wishes</a>
+    <a href="index.html#teachers">Teachers</a>
+    <a href="about.html">About</a>
+    <a href="contact.html">Contact</a>
+  </nav>
+  <div class="footer-bottom">
+    Made with ❤️ love by <strong>Lukveer Singh</strong> &amp; <strong>Rohit Yadav</strong> &nbsp;·&nbsp; May your futures be as bright as your smiles
+  </div>
+</footer>
+
+<script>
+  // Scroll bar
+  var scrollBar = document.createElement('div');
+  scrollBar.id = 'scrollBar';
+  document.body.prepend(scrollBar);
+
+  window.addEventListener('scroll', function() {
+    var scrollTop = window.scrollY;
+    var docHeight = document.body.scrollHeight - window.innerHeight;
+    scrollBar.style.width = ((scrollTop / docHeight) * 100) + '%';
+    var nav = document.getElementById('mainNav');
+    if (scrollTop > 60) nav.classList.add('scrolled');
+    else nav.classList.remove('scrolled');
+  });
+
+  // Page load cinematic entrance
+  window.addEventListener('load', function() {
+    var pt = document.getElementById('pageTransition');
+    if (!pt) return;
+    pt.classList.add('reveal-in');
+    setTimeout(function() {
+      pt.style.transition = 'clip-path 1s cubic-bezier(0.77,0,0.18,1)';
+      pt.classList.remove('reveal-in');
+      pt.classList.add('reveal-out');
+      setTimeout(function() { pt.style.display = 'none'; }, 1000);
+    }, 400);
+  });
+
+  // Cinematic reveal observer
+  var cinematicObs = new IntersectionObserver(function(entries) {
+    entries.forEach(function(e) { if (e.isIntersecting) e.target.classList.add('in-view'); });
+  }, { threshold: 0.08 });
+  document.querySelectorAll('.cinematic-reveal, .stagger-children').forEach(function(el) {
+    cinematicObs.observe(el);
+  });
+
+  // Scroll reveal
+  var revObs = new IntersectionObserver(function(entries) {
+    entries.forEach(function(e) { if (e.isIntersecting) e.target.classList.add('visible'); });
+  }, { threshold: 0.12 });
+  document.querySelectorAll('.reveal').forEach(function(r) { revObs.observe(r); });
+
+  // Section in-view
+  var sectionObs = new IntersectionObserver(function(entries) {
+    entries.forEach(function(e) {
+      if (e.isIntersecting) e.target.classList.add('in-view');
+      else e.target.classList.remove('in-view');
+    });
+  }, { threshold: 0.1 });
+  document.querySelectorAll('section').forEach(function(s) { sectionObs.observe(s); });
+
+  // Counter animation
+  function animCount(el) {
+    var target = +el.dataset.count;
+    var current = 0;
+    var step = target / 60;
+    var timer = setInterval(function() {
+      current = Math.min(current + step, target);
+      el.textContent = Math.round(current).toLocaleString();
+      if (current >= target) clearInterval(timer);
+    }, 20);
+  }
+  var statObs = new IntersectionObserver(function(entries) {
+    entries.forEach(function(e) { if (e.isIntersecting) { animCount(e.target); statObs.unobserve(e.target); } });
+  }, { threshold: 0.5 });
+  document.querySelectorAll('[data-count]').forEach(function(el) { statObs.observe(el); });
+
+  // Magnetic cursor
+  var magCursor = document.getElementById('magnetCursor');
+  var magTrail = document.getElementById('magnetTrail');
+  var mcx = 0, mcy = 0, mtx = 0, mty = 0, cursorVisible = false;
+  document.addEventListener('mousemove', function(e) {
+    mcx = e.clientX; mcy = e.clientY;
+    if (!cursorVisible) {
+      cursorVisible = true;
+      magCursor.classList.add('visible');
+      magTrail.classList.add('visible');
+    }
+    magCursor.style.left = mcx + 'px';
+    magCursor.style.top = mcy + 'px';
+  });
+  (function animMagTrail() {
+    mtx += (mcx - mtx) * 0.08;
+    mty += (mcy - mty) * 0.08;
+    magTrail.style.left = mtx + 'px';
+    magTrail.style.top = mty + 'px';
+    requestAnimationFrame(animMagTrail);
+  })();
+  document.querySelectorAll('a, button, .pillar-card, .creator-card').forEach(function(el) {
+    el.addEventListener('mouseenter', function() { magCursor.classList.add('hovering'); });
+    el.addEventListener('mouseleave', function() { magCursor.classList.remove('hovering'); });
+  });
+
+  // Bokeh
+  var bc = document.getElementById('bokehContainer');
+  for (var i = 0; i < 18; i++) {
+    var b = document.createElement('div');
+    b.className = 'bokeh';
+    var size = Math.random() * 80 + 20;
+    var op = (Math.random() * 0.12 + 0.03).toFixed(2);
+    b.style.cssText = 'width:'+size+'px;height:'+size+'px;left:'+Math.random()*100+'%;--op:'+op+';animation-duration:'+(Math.random()*15+10)+'s;animation-delay:'+(Math.random()*-20)+'s;';
+    bc.appendChild(b);
+  }
+
+  // Mobile menu
+  function toggleMobileMenu() {
+    var menu = document.getElementById('mobileMenu');
+    var burger = document.getElementById('hamburger');
+    menu.classList.toggle('open');
+    burger.classList.toggle('open');
+    document.body.style.overflow = menu.classList.contains('open') ? 'hidden' : '';
+  }
+  function closeMobileMenu() {
+    document.getElementById('mobileMenu').classList.remove('open');
+    document.getElementById('hamburger').classList.remove('open');
+    document.body.style.overflow = '';
+  }
+</script>
+</body>
+</html>
