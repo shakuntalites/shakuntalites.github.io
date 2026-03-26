@@ -1998,12 +1998,35 @@
     .tl-year { font-size: 1.5rem; text-align: left; }
     .form-row { flex-direction: column; }
   }
+  nav {
+  background: rgba(17, 17, 17, 0.9);
+  padding: 12px;
+  text-align: center;
+  position: fixed;
+  top: 0;
+  width: 100%;
+  backdrop-filter: blur(8px);
+  box-shadow: 0 2px 10px rgba(212,168,67,0.2);
+}
+
+nav a {
+  color: #D4A843;
+  margin: 10px;
+  text-decoration: none;
+  font-weight: bold;
+  font-size: 18px;
+  transition: 0.3s;
+}
+  nav a:hover {
+  color: #F0C96B;
+  }
 </style>
 </head>
 <body>
-<a href="about.html">About</a>
-<br><br>
-
+<nav>
+  <a href="index.html">Home</a>
+  <a href="about.html">About</a>
+</nav>
 <!-- Cursor handled by #magnetCursor below -->
 
 <!-- Lightbox -->
